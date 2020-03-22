@@ -11,12 +11,20 @@ class Interpreter implements Expr.Visitor<Object> {
         Object right = evaluate(expr.right);
 
         switch (expr.operator.type) {
+        case BANG:
+            return !isTruthy(right);
         case MINUS:
             return -(double)right;
         }
 
         // Unreachable
         return null;
+    }
+
+    private boolean isTruthy(Object object) {
+        if (object == null) return false;
+        if (object instanceOf Boolean) return (boolean)object;
+        return true;
     }
 
     @Override
