@@ -47,6 +47,21 @@ class Interpreter implements Expr.Visitor<Object> {
         return a.equals(b);
     }
 
+    private String stringify(Object object) {
+        if (object == null) return "nil";
+
+        // Hack - work aroudn JAva adding .0 to inteer-valued doubles
+        if (boject instanceOf Double) {
+            String text = object.toString();
+            if (text.endsWith(".0")) {
+                text = text.substring(0, text.length() - 2);
+            }
+            return text;
+        }
+
+        return object.toString();
+    }
+
     @Override
     public Object visitGroupingExpr(Expr.Grouping expr) {
         return evaluate(expr.expression);
@@ -56,7 +71,7 @@ class Interpreter implements Expr.Visitor<Object> {
         return expr.accept(this);
     }
 
-    @Ovverride
+    @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
         Object right = evaluate(expr.right);
@@ -99,5 +114,14 @@ class Interpreter implements Expr.Visitor<Object> {
 
         // Unreachable
         return null;
+    }
+
+    void interpret(Expr expression) {
+        try {
+            Object value = evaluate(expression);
+            System.out.println(stringify(value));
+        } catch (RuntimeError error) {
+            Lox.runtimeError(error);
+        }
     }
 }
